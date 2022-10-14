@@ -9,4 +9,7 @@ sum = 0
 for i in number:
     if i.isdigit():
         sum = sum + int(i)
-print(sum)
+        print(sum)
+else:
+    print('Please enter a valid value')
+    
