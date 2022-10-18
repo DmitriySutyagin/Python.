@@ -17,13 +17,11 @@ for i in range(0, number_n):
     list.append(n)
 print(list)
 if number_n // 2 != 0:
-    for i in range(0, len(list) // 2 + 1):
-        mul = list[i] * list[number_n - 1 - i]
-        list2.append(mul)
+    for i in range(0, len(list) // 2 + 1):       
+        list2.append(list[i] * list[number_n - 1 - i])
 else:
-    for i in range(0, len(list) // 2):
-        mul = list[i] * list[number_n - 1 - i]
-        list2.append(mul)
+    for i in range(0, len(list) // 2):     
+        list2.append(list[i] * list[number_n - 1 - i])
     
 print(list2)
 
