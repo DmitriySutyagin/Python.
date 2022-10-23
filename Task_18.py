@@ -10,5 +10,4 @@ list = []
 for i in lines:
     if i not in list:
         list.append(i)
-         
 print(list)
