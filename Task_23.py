@@ -1,106 +1,61 @@
-#  Создайте программу для игры в "Крестики-нолики".
-# Игра начинается с хода человека, который ставит крестики
-
-import random
-from tkinter import *
+# Крестики - нолики
 import os
-os.system("cls")
-
-root = Tk()         # делаем окно с заголовком
-root.title('Крестики-нолики')
-
-game_run = True     # если будет победитель, будет False
-field = []          # в массиве храним состояние поля
-cross_count = 0     # Подсчитываем количество крестиков на поле, максимально 5
+os.system('cls')
 
 
-def new_game():     # поле и переменные обнуляются
-    for row in range(3):
-        for col in range(3):
-            field[row][col]['text'] = ' '
-            field[row][col]['background'] = 'lavender'
-    global game_run
-    game_run = True
-    global cross_count
-    cross_count = 0
+def draw_desk(desk):
+    print('-'*13)
+    for i in range(3):
+        print('|', desk[0 + i*3], '|', desk[1 + i*3], '|', desk[2 + i*3], '|')
+        print('-'*13)
+        
+def take_choice(player_choice):
+    flag = False
+    while not flag:
+        player_answer = input('В какую клеточку ставим ' + player_choice + '? ')
+        try:
+            player_answer = int(player_answer)
+        except:
+            print('Ошибка ввода. Введите число клеточки')
+            continue
+        if player_answer >= 1 and player_answer <= 9:
+            if (str(desk[player_answer - 1]) not in 'XO'):
+                desk[player_answer - 1] = player_choice
+                flag = True
+            else:
+                print('Указанная клетка уже занята')
+        else:
+            print('Введите число клеточки от 1 до 9')
+    return desk
 
+def check_win(desk):
+    win_coord = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
+    for i in win_coord:
+        if desk[i[0]] == desk[i[1]] == desk[i[2]]:
+            return desk[i[0]]
+    return False
 
-def click(row, col):        # ставим крестик и считаем
-    if game_run and field[row][col]['text'] == ' ':
-        field[row][col]['text'] = 'X'
-        global cross_count
-        cross_count += 1
-        check_win('X')      # проверка на победу
-        if game_run and cross_count < 5:
-            computer_move()
-            check_win('O')  # проверка на победу
-
-# проверка победы по всем направлениям
-
-
-def check_win(smb):
-    for n in range(3):
-        check_line(field[n][0], field[n][1], field[n][2], smb)
-        check_line(field[0][n], field[1][n], field[2][n], smb)
-    check_line(field[0][0], field[1][1], field[2][2], smb)
-    check_line(field[2][0], field[1][1], field[0][2], smb)
-
-# на входе три поля и символ, если символ есть в этих трех полях,
-# то меняем цвет полей на розовый и остановка игры
-
-
-def check_line(a1, a2, a3, smb):
-    if a1['text'] == smb and a2['text'] == smb and a3['text'] == smb:
-        a1['background'] = a2['background'] = a3['background'] = 'pink'
-        global game_run
-        game_run = False
-
-
-def can_win(a1, a2, a3, smb):   # проверка на победу
-    res = False
-    if a1['text'] == smb and a2['text'] == smb and a3['text'] == ' ':
-        a3['text'] = 'O'
-        res = True
-    if a1['text'] == smb and a2['text'] == ' ' and a3['text'] == smb:
-        a2['text'] = 'O'
-        res = True
-    if a1['text'] == ' ' and a2['text'] == smb and a3['text'] == smb:
-        a1['text'] = 'O'
-        res = True
-    return res
-
-
-def computer_move():
-    for n in range(3):
-        if can_win(field[n][0], field[n][1], field[n][2], 'O'):
-            return
-        if can_win(field[0][n], field[1][n], field[2][n], 'O'):
-            return
-    if can_win(field[0][0], field[1][1], field[2][2], 'O'):
-        return
-    if can_win(field[2][0], field[1][1], field[0][2], 'O'):
-        return
-
-    while True:  # случайным образом перебираются поля, пока не выпадет свободное
-        row = random.randint(0, 2)
-        col = random.randint(0, 2)
-        if field[row][col]['text'] == ' ':
-            field[row][col]['text'] = 'O'
+def main(desk):
+    counter = 0
+    win = False
+    while not win:
+        draw_desk(desk)
+        if counter % 2 == 0:
+            take_choice('X')
+        else:
+            take_choice('O')
+        counter += 1
+        if counter > 4:
+            tmp = check_win(desk)
+            if tmp:
+                print(tmp, "выиграл!")
+                win = True
+                break
+        if counter == 9:
+            print('У нас - Ничья!')
             break
+    draw_desk(desk)
 
-
-for row in range(3):  # создаем поле кнопок
-    line = []
-    for col in range(3):
-        button = Button(text=' ', width=6, height=3,
-                        font=('Verdana', 22, 'bold'),
-                        background='lavender',
-                        command=lambda row=row, col=col: click(row, col))
-        button.grid(row=row, column=col, sticky='nsew')
-        line.append(button)
-    field.append(line)
-
-new_button = Button(text='Новая игра', command=new_game)
-new_button.grid(row=3, column=0, columnspan=3, sticky='nsew')
-
-root.mainloop()
+print('Начинаем нашу игру')
+desk = list(range(1, 10))
+main(desk)
